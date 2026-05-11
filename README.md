@@ -2,7 +2,25 @@
 
 A lightweight Windows system tray app that prevents your PC from sleeping or locking — with smart pause features so it stays out of your way when you don't need it.
 
-No installer. No background services. Just run it.
+---
+
+## Installation
+
+Download the latest installer from the [Releases](https://github.com/carlomazo/keep-awake/releases/latest) page and run `keep_awake_setup.exe`.
+
+The installer will:
+- Install the app to Program Files
+- Create a Start Menu shortcut
+- Optionally add a desktop shortcut
+- Optionally set the app to start with Windows
+
+> **Note:** Windows SmartScreen may show a warning on first run (unknown publisher). Click "More info" → "Run anyway".
+
+---
+
+## Auto-update
+
+The app checks for new releases automatically 30 seconds after startup. If a newer version is available, a notification appears in the tray. Click "Yes" to download and install the update silently.
 
 ---
 
@@ -52,55 +70,39 @@ No installer. No background services. Just run it.
 
 ---
 
-## Requirements
+## Keyboard Shortcut
 
-- Windows 10 or later
-- Python 3.8+
-- `pystray` library
+Default: `Ctrl+Shift+K` — toggles keep-awake from any window.
 
-```
-pip install pystray
-```
-
----
-
-## Running
-
-```
-python keep_awake.py
-```
-
-Or use the included `start.bat` to launch minimized (no cmd window flash).
-
-### First-time setup
-
-```
-setup.bat
-```
-
-Installs `pystray` and creates a shortcut in the Startup folder if you want autostart.
+Reassignable in **Settings > System > Hotkey**.
 
 ---
 
 ## Project Structure
 
 ```
-keep_awake.py     — entry point: tray menu, start/stop, hotkey, orchestration
-state.py          — AppState dataclass, settings load/save, shared singleton
-core.py           — translations, tooltip, icon, ctypes helpers, schedule logic
-monitors.py       — background loops: keep-awake, tooltip, schedule, meeting, battery, lock
-settings_ui.py    — full Settings window (Tkinter)
+keep_awake.py       — entry point: tray menu, start/stop, hotkey, orchestration
+state.py            — AppState dataclass, settings load/save, shared singleton
+core.py             — translations, tooltip, icon, ctypes helpers, schedule logic
+monitors.py         — background loops: keep-awake, tooltip, schedule, meeting, battery, lock
+settings_ui.py      — full Settings window (Tkinter)
+updater.py          — auto-update: checks GitHub API, downloads and runs installer
+keep_awake_setup.iss — Inno Setup installer script
 tests/
-  test_core.py    — 33 unit tests for core logic
+  test_core.py      — 33 unit tests for core logic
 ```
 
 ---
 
-## Keyboard Shortcut
+## Building from source
 
-Default: `Ctrl+Shift+K` — toggles keep-awake from any window.
+Requirements: Python 3.8+, `pystray`, `pyinstaller`, Inno Setup 6.
 
-Reassignable in **Settings > System > Hotkey**.
+```bash
+pip install pystray pyinstaller
+python -m PyInstaller keep_awake.spec --noconfirm
+# then compile keep_awake_setup.iss with Inno Setup
+```
 
 ---
 
