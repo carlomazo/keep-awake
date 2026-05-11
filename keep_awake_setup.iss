@@ -2,7 +2,7 @@
 ; Build: ISCC keep_awake_setup.iss
 
 #define AppName      "Keep Awake"
-#define AppVersion   "2.5.1"
+#define AppVersion   "2.6.0"
 #define AppPublisher "carlomazo"
 #define AppURL       "https://github.com/carlomazo/keep-awake"
 #define AppExeName   "keep_awake.exe"

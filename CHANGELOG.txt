@@ -1,6 +1,16 @@
 Keep Awake — Changelog
 ======================
 
+v2.6.0 (2026-05-11)
+--------------------
+- New: Spanish (Español) language option — full UI translation in Settings > System
+- New: weekly usage summary — on first startup each week a tray notification shows
+  last week's total keep-awake time, number of active days, and daily average
+  (stored in .last_summary_week so it fires once per week, not every launch)
+- GitHub: added MIT LICENSE, issue templates (bug/feature), PR template with checklist,
+  and GitHub Actions release workflow (build exe + installer on tag push)
+- GitHub: repository topics set (windows, python, system-tray, productivity, etc.)
+
 v2.5.1 (2026-05-11)
 --------------------
 - Fixed: crash on quit — hotkey thread null check was incorrectly placed; now safely

@@ -513,7 +513,7 @@ def _open_settings_inner(icon):
     ttk.Label(tab_system, text=T("Language")).grid(
         row=9, column=0, sticky="w", padx=10, pady=(8, 2))
     language_var = tk.StringVar(value=state.language)
-    for i, (label, val) in enumerate([("English", "en"), ("Português", "pt")]):
+    for i, (label, val) in enumerate([("English", "en"), ("Português", "pt"), ("Español", "es")]):
         ttk.Radiobutton(tab_system, text=label, variable=language_var, value=val).grid(
             row=10 + i, column=0, sticky="w", padx=24, pady=2)
 

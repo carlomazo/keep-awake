@@ -309,3 +309,98 @@ def _start_lock_monitor(icon):
     _lock_thread = threading.Thread(
         target=_lock_monitor_loop, args=(icon,), daemon=True)
     _lock_thread.start()
+
+
+# ---------------------------------------------------------------------------
+# Weekly usage summary
+# ---------------------------------------------------------------------------
+
+_SUMMARY_STATE_FILE = os.path.join(os.path.dirname(LOG_FILE), ".last_summary_week")
+
+
+def _read_last_summary_week():
+    try:
+        with open(_SUMMARY_STATE_FILE, encoding="utf-8") as f:
+            return int(f.read().strip())
+    except Exception:
+        return None
+
+
+def _write_last_summary_week(iso_week: int):
+    try:
+        with open(_SUMMARY_STATE_FILE, "w", encoding="utf-8") as f:
+            f.write(str(iso_week))
+    except Exception:
+        pass
+
+
+def _compute_last_week_stats():
+    """Return (week_label, total_secs, days_active, avg_secs) for the previous ISO week."""
+    today = datetime.date.today()
+    last_monday = today - datetime.timedelta(days=today.weekday() + 7)
+    last_sunday = last_monday + datetime.timedelta(days=6)
+
+    if not os.path.exists(LOG_FILE):
+        return None
+
+    total_secs = 0.0
+    active_days = set()
+    try:
+        with open(LOG_FILE, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    d = datetime.date.fromisoformat(row["date"])
+                except (KeyError, ValueError):
+                    continue
+                if last_monday <= d <= last_sunday:
+                    total_secs += float(row.get("duration_min", 0)) * 60
+                    active_days.add(d)
+    except Exception:
+        return None
+
+    if total_secs < 60:
+        return None
+
+    days = len(active_days)
+    avg = total_secs / days if days else 0
+    week_label = last_monday.strftime("%b %d")
+    return week_label, int(total_secs), days, int(avg)
+
+
+def _weekly_summary_loop(icon):
+    """Fire a summary balloon once per week, on the first startup of the week."""
+    while not _shutdown.is_set():
+        today = datetime.date.today()
+        current_iso_week = today.isocalendar()[1]
+        last_sent = _read_last_summary_week()
+
+        if last_sent != current_iso_week:
+            stats = _compute_last_week_stats()
+            if stats:
+                week_label, total_secs, days, avg_secs = stats
+                total_str = _format_duration_for_summary(total_secs)
+                avg_str   = _format_duration_for_summary(avg_secs)
+                msg = (
+                    f"{T('Weekly summary')} ({T('week of')} {week_label})\n"
+                    f"{total_str} total · {days} {T('days active')} · {avg_str} {T('avg per day')}"
+                )
+                notify(icon, msg)
+            _write_last_summary_week(current_iso_week)
+
+        # Sleep until next day, then check again
+        if _shutdown.wait(timeout=86400):
+            break
+
+
+def _format_duration_for_summary(seconds: int) -> str:
+    h, rem = divmod(seconds, 3600)
+    m = rem // 60
+    if h:
+        return f"{h}h {m:02d}m" if m else f"{h}h"
+    return f"{m}m"
+
+
+def start_weekly_summary(icon):
+    t = threading.Thread(target=_weekly_summary_loop, args=(icon,), daemon=True)
+    t.start()

@@ -42,6 +42,7 @@ from monitors import (
     _start_battery_monitor,
     _start_lock_monitor,
     tooltip_loop,
+    start_weekly_summary,
 )
 from settings_ui import open_settings
 
@@ -445,6 +446,7 @@ def main():
                     start_keeping(ic, None)
                 from updater import start_update_checker
                 start_update_checker(notify_fn=lambda msg: notify(ic, msg))
+                start_weekly_summary(ic)
                 _log("setup() complete")
             except Exception:
                 _log("ERROR in setup():\n" + traceback.format_exc())

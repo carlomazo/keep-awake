@@ -47,13 +47,14 @@ The installer will:
 - **General tab** — interval, auto-stop timer, keep-awake methods (API / mouse nudge / key press)
 - **Schedule tab** — time blocks and day selection
 - **Profiles tab** — create, rename, reorder, update, and activate profiles
-- **System tab** — language (English / Português), theme (Dark / Light), global hotkey, autostart, export/import config
+- **System tab** — language (English / Português / Español), theme (Dark / Light), global hotkey, autostart, export/import config
 - Apply changes without closing the window via the **Apply** button
 
 ### Log
 - Every session recorded in `usage_log.csv` with date, start time, end time, and duration
 - Log viewer inside Settings with **List**, **Week**, **Month**, and **Chart** views
 - Export to a standalone HTML report
+- Weekly summary notification — on first startup each week, shows last week's total time, active days, and daily average
 
 ### Other
 - Global hotkey `Ctrl+Shift+K` — toggles keep-awake from any window (reassignable in Settings)
