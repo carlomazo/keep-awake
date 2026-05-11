@@ -1,6 +1,21 @@
 Keep Awake — Changelog
 ======================
 
+v2.5.0 (2026-05-11)
+--------------------
+- New: Windows installer (keep_awake_setup.exe) built with Inno Setup
+  - Installs to Program Files, creates Start Menu shortcut
+  - Optional desktop icon and "Start with Windows" task during install
+  - Clean uninstall via "Add or remove programs"
+- New: auto-update checker — app queries GitHub releases API 30s after startup;
+  if a newer version is available, shows a tray notification and prompts to download
+  and install automatically
+- New: VERSION constant in state.py — bumping it triggers auto-update for all users
+- New: self-signed code signing certificate (CN=Keep Awake, O=carlomazo, C=BR);
+  installer and exe are signed — SmartScreen now shows publisher name instead of "unknown"
+- Fixed: autostart registry entry pointed to start.bat instead of the exe when running
+  as a compiled binary — now detects frozen mode via sys.frozen and registers correctly
+
 v2.4.2 (2026-05-10)
 --------------------
 - Fixed: icon.stop() called twice on quit — caused occasional crash on exit
