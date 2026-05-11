@@ -84,11 +84,16 @@ Reassignable in **Settings > System > Global hotkey**.
 ```
 keep_awake.py        — entry point: tray menu, start/stop, hotkey, orchestration
 state.py             — AppState dataclass, settings load/save, shared singleton
-core.py              — translations, tooltip, icon, ctypes helpers, schedule logic
-monitors.py          — background loops: keep-awake, tooltip, schedule, meeting, battery, lock
+core.py              — translations (EN/PT/ES), tooltip, icon, ctypes helpers, schedule logic
+monitors.py          — background loops: keep-awake, tooltip, schedule, meeting, battery, lock, weekly summary
 settings_ui.py       — Settings window (Tkinter)
 updater.py           — auto-update: checks GitHub releases API, downloads and runs installer
 keep_awake_setup.iss — Inno Setup installer script
+.github/
+  workflows/
+    release.yml      — GitHub Actions: builds exe + installer and attaches to release on tag push
+  ISSUE_TEMPLATE/    — bug report and feature request templates
+  pull_request_template.md
 tests/
   test_core.py       — 51 unit tests covering core logic, schedule, tooltip, hotkey, versioning
 ```
@@ -101,9 +106,11 @@ Requirements: Python 3.8+, `pystray`, `pyinstaller`, [Inno Setup 6](https://jrso
 
 ```bash
 pip install pystray pyinstaller
-python -m PyInstaller keep_awake.spec --noconfirm
+python -m PyInstaller keep_awake.py --onefile --noconsole --name keep_awake --exclude-module PIL --exclude-module Pillow --noconfirm
 # Compile keep_awake_setup.iss with Inno Setup to produce the installer
 ```
+
+Releases are built automatically via GitHub Actions on every `v*` tag push — see `.github/workflows/release.yml`.
 
 ---
 

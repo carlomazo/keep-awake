@@ -4,12 +4,18 @@ Keep Awake — Changelog
 v2.6.0 (2026-05-11)
 --------------------
 - New: Spanish (Español) language option — full UI translation in Settings > System
+  covering all UI strings: tray menu, settings window, dialogs, notifications, day names
 - New: weekly usage summary — on first startup each week a tray notification shows
-  last week's total keep-awake time, number of active days, and daily average
-  (stored in .last_summary_week so it fires once per week, not every launch)
-- GitHub: added MIT LICENSE, issue templates (bug/feature), PR template with checklist,
-  and GitHub Actions release workflow (build exe + installer on tag push)
-- GitHub: repository topics set (windows, python, system-tray, productivity, etc.)
+  last week's total keep-awake time, number of active days, and daily average;
+  state stored in .last_summary_week so the notification fires once per week only
+- GitHub: added MIT LICENSE
+- GitHub: added issue templates (bug report, feature request) and PR template with checklist
+- GitHub: added GitHub Actions release workflow — on every v* tag push, GitHub automatically
+  builds the exe with PyInstaller, compiles the installer with Inno Setup, and publishes the
+  release with keep_awake_setup.exe attached (no manual build steps required)
+- GitHub: repository topics set (windows, python, system-tray, productivity, keep-awake, etc.)
+- Fixed: GitHub Actions workflow — replaced spec file reference with inline PyInstaller flags
+  since keep_awake.spec is not tracked in the repository
 
 v2.5.1 (2026-05-11)
 --------------------
