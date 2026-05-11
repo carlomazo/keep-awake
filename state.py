@@ -13,6 +13,8 @@ from typing import Optional
 
 # --- Paths ---
 
+VERSION       = "2.5.0"
+
 BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_FILE = os.path.join(BASE_DIR, "settings.json")
 LOG_FILE      = os.path.join(BASE_DIR, "usage_log.csv")

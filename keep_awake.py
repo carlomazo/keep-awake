@@ -19,7 +19,7 @@ import winreg
 import pystray
 from pystray import MenuItem as item
 
-from state import state, BASE_DIR, MUTEX_NAME, save_settings, load_settings
+from state import state, BASE_DIR, MUTEX_NAME, VERSION, save_settings, load_settings
 from core import (
     T,
     _build_tooltip,
@@ -441,6 +441,8 @@ def main():
                         start_keeping(ic, None)
                 elif not state.start_paused:
                     start_keeping(ic, None)
+                from updater import start_update_checker
+                start_update_checker(notify_fn=lambda msg: notify(ic, msg))
                 _log("setup() complete")
             except Exception:
                 _log("ERROR in setup():\n" + traceback.format_exc())
