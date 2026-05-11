@@ -25,7 +25,7 @@ jobs:
         run: pip install pystray pyinstaller
 
       - name: Build exe with PyInstaller
-        run: python -m PyInstaller keep_awake.spec --noconfirm
+        run: python -m PyInstaller keep_awake.py --onefile --noconsole --name keep_awake --exclude-module PIL --exclude-module Pillow --noconfirm
 
       - name: Install Inno Setup
         run: choco install innosetup --yes --no-progress
