@@ -16,6 +16,8 @@ v2.6.0 (2026-05-11)
 - GitHub: repository topics set (windows, python, system-tray, productivity, keep-awake, etc.)
 - Fixed: GitHub Actions workflow — replaced spec file reference with inline PyInstaller flags
   since keep_awake.spec is not tracked in the repository
+- Fixed: Español radio button overlapping the separator in Settings > System — separator row
+  was not updated when the third language option was added
 
 v2.5.1 (2026-05-11)
 --------------------
