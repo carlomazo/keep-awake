@@ -89,7 +89,7 @@ settings_ui.py      — full Settings window (Tkinter)
 updater.py          — auto-update: checks GitHub API, downloads and runs installer
 keep_awake_setup.iss — Inno Setup installer script
 tests/
-  test_core.py      — 33 unit tests for core logic
+  test_core.py      — 51 unit tests for core logic
 ```
 
 ---
