@@ -12,15 +12,9 @@ The installer will:
 - Install the app to Program Files
 - Create a Start Menu shortcut
 - Optionally add a desktop shortcut
-- Optionally set the app to start with Windows
+- Optionally register the app to start with Windows
 
 > **Note:** Windows SmartScreen may show a warning on first run. The installer is signed as **Keep Awake — carlomazo** (self-signed certificate). Click "More info" → "Run anyway" to proceed.
-
----
-
-## Auto-update
-
-The app checks for new releases automatically 30 seconds after startup. If a newer version is available, a notification appears in the tray. Click "Yes" to download and install the update silently.
 
 ---
 
@@ -28,45 +22,51 @@ The app checks for new releases automatically 30 seconds after startup. If a new
 
 ### Core
 - Prevents Windows sleep and screen-off via `SetThreadExecutionState`
-- Optional mouse nudge (1px back-and-forth, returns to original position)
+- Optional mouse nudge — moves cursor 1px and back, returns to original position
 - Optional configurable key press (default: Scroll Lock)
 - Green tray icon = active, red = paused
-- Double-click tray icon to toggle
+- Double-click tray icon to toggle on/off
 
 ### Smart Pause
-- **Meeting detection** — pauses automatically when MS Teams or Zoom is running
-- **Battery guard** — pauses below a configurable battery threshold (default 20%), resumes on charger
-- **Screen lock** — pauses when the screen locks, resumes when unlocked
-- **Smart idle** — skips mouse nudge while you're actively typing or moving the mouse
+- **Meeting detection** — pauses automatically when MS Teams or Zoom is running; resumes when the meeting ends
+- **Battery guard** — pauses when battery drops below a configurable threshold (default 20%); resumes when charger is connected
+- **Screen lock** — pauses when the screen locks; resumes when unlocked
+- **Smart idle** — skips mouse nudge while the user is actively typing or moving the mouse
 
 ### Schedule
 - Up to 3 time blocks per day (e.g. 08:00–12:00 and 13:00–18:00)
 - Per-day selection (Mon–Sun independently)
-- Auto start/stop — app activates and pauses itself on schedule
+- Activates and pauses itself automatically based on the schedule
 
 ### Profiles
 - Save named configurations (interval, auto-stop, schedule)
 - Switch profiles from the tray menu without opening Settings
-- Double-click a profile to activate it directly
+- Double-click a profile in the list to activate it directly
 
 ### Settings
-- **General tab** — interval, auto-stop timer, keep-awake methods
+- **General tab** — interval, auto-stop timer, keep-awake methods (API / mouse nudge / key press)
 - **Schedule tab** — time blocks and day selection
-- **Profiles tab** — create, rename, reorder, activate profiles
-- **System tab** — language (EN/PT-BR), theme (Dark/Light), hotkey, autostart, export/import config
-- Changes apply immediately via Apply button (no restart needed)
+- **Profiles tab** — create, rename, reorder, update, and activate profiles
+- **System tab** — language (English / Português), theme (Dark / Light), global hotkey, autostart, export/import config
+- Apply changes without closing the window via the **Apply** button
 
 ### Log
-- Usage log stored in `usage_log.csv` — every session recorded with date, start, end, duration
-- Log viewer in Settings with List, Week, Month, and Chart views
-- Export to standalone HTML report
+- Every session recorded in `usage_log.csv` with date, start time, end time, and duration
+- Log viewer inside Settings with **List**, **Week**, **Month**, and **Chart** views
+- Export to a standalone HTML report
 
 ### Other
-- Configurable global hotkey (default `Ctrl+Shift+K`) to toggle from anywhere
-- Start with Windows (registry autostart)
-- Start paused option
+- Global hotkey `Ctrl+Shift+K` — toggles keep-awake from any window (reassignable in Settings)
+- Start with Windows via registry autostart
+- Start paused option — app opens without activating keep-awake
 - Single instance protection via Windows named mutex
 - Balloon tip notifications on state changes
+
+---
+
+## Auto-Update
+
+The app checks GitHub for new releases 30 seconds after startup. If a newer version is available, a notification appears in the tray. Clicking "Yes" downloads the new installer and runs it automatically.
 
 ---
 
@@ -74,34 +74,34 @@ The app checks for new releases automatically 30 seconds after startup. If a new
 
 Default: `Ctrl+Shift+K` — toggles keep-awake from any window.
 
-Reassignable in **Settings > System > Hotkey**.
+Reassignable in **Settings > System > Global hotkey**.
 
 ---
 
 ## Project Structure
 
 ```
-keep_awake.py       — entry point: tray menu, start/stop, hotkey, orchestration
-state.py            — AppState dataclass, settings load/save, shared singleton
-core.py             — translations, tooltip, icon, ctypes helpers, schedule logic
-monitors.py         — background loops: keep-awake, tooltip, schedule, meeting, battery, lock
-settings_ui.py      — full Settings window (Tkinter)
-updater.py          — auto-update: checks GitHub API, downloads and runs installer
+keep_awake.py        — entry point: tray menu, start/stop, hotkey, orchestration
+state.py             — AppState dataclass, settings load/save, shared singleton
+core.py              — translations, tooltip, icon, ctypes helpers, schedule logic
+monitors.py          — background loops: keep-awake, tooltip, schedule, meeting, battery, lock
+settings_ui.py       — Settings window (Tkinter)
+updater.py           — auto-update: checks GitHub releases API, downloads and runs installer
 keep_awake_setup.iss — Inno Setup installer script
 tests/
-  test_core.py      — 51 unit tests for core logic
+  test_core.py       — 51 unit tests covering core logic, schedule, tooltip, hotkey, versioning
 ```
 
 ---
 
-## Building from source
+## Building from Source
 
-Requirements: Python 3.8+, `pystray`, `pyinstaller`, Inno Setup 6.
+Requirements: Python 3.8+, `pystray`, `pyinstaller`, [Inno Setup 6](https://jrsoftware.org/isinfo.php).
 
 ```bash
 pip install pystray pyinstaller
 python -m PyInstaller keep_awake.spec --noconfirm
-# then compile keep_awake_setup.iss with Inno Setup
+# Compile keep_awake_setup.iss with Inno Setup to produce the installer
 ```
 
 ---
