@@ -518,7 +518,7 @@ def _open_settings_inner(icon):
             row=10 + i, column=0, sticky="w", padx=24, pady=2)
 
     ttk.Separator(tab_system, orient="horizontal").grid(
-        row=12, column=0, columnspan=2, sticky="ew", padx=10, pady=(14, 6))
+        row=13, column=0, columnspan=2, sticky="ew", padx=10, pady=(14, 6))
 
     def _reset_defaults():
         if not messagebox.askyesno(T("Reset to defaults_title"),
