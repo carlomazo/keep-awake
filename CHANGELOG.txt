@@ -1,6 +1,31 @@
 Keep Awake — Changelog
 ======================
 
+v2.4.2 (2026-05-10)
+--------------------
+- Fixed: icon.stop() called twice on quit — caused occasional crash on exit
+- Fixed: TypeError when auto-stop value is None (missing None guard before comparison)
+- Fixed: schedule_blocks reset to [] when all time fields were blank — now preserves existing blocks
+- Fixed: duplicate key-capture binding in Settings caused UI to freeze after capturing a hotkey
+- Fixed: race condition in tooltip — time.monotonic() subtracted from None when start_time unset
+- Fixed: file handle leak — open(log_file).close() replaced with proper `with` block
+- Fixed: Export HTML showed no warning when log file did not exist
+- Fixed: TypeError on boot when schedule_days is null in settings.json — now defaults to empty set
+- Fixed: TypeError in custom auto-stop dialog when input is empty (None guard added)
+
+v2.4.1 (2026-05-10)
+--------------------
+- Refactored: split monolithic keep_awake.py (~2100 lines) into focused modules
+  - state.py   — AppState dataclass, settings load/save, shared singleton
+  - core.py    — translations, T(), tooltip, icon generation, ctypes helpers, schedule logic
+  - monitors.py — all background loops (keep-awake, tooltip, schedule, meeting, battery, lock)
+  - settings_ui.py — full Settings window (Tkinter)
+  - keep_awake.py  — orchestrator: main(), tray menu, start/stop, hotkey
+- Replaced ~25 global variables with a single AppState dataclass instance (state singleton)
+- Added centralized _shutdown threading.Event — all loops exit cleanly on quit
+- Added tests/ — 33 unit tests covering tooltip, schedule window, duration parsing/formatting,
+  icon color logic, and translation fallback (all passing)
+
 v2.4.0 (2026-05-10)
 --------------------
 - New: "Start paused" option in Settings > System — app opens without activating keep-awake
