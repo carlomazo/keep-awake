@@ -11,6 +11,7 @@ import ctypes
 import ctypes.wintypes
 import datetime
 import os
+import sys
 import threading
 import time
 import winreg
@@ -59,7 +60,10 @@ AUTOSTART_NAME = "KeepAwake"
 AUTOSTART_KEY  = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
 
-def _get_start_bat_path():
+def _get_autostart_path():
+    # When frozen as .exe, register the exe itself; otherwise use start.bat
+    if getattr(sys, "frozen", False):
+        return sys.executable
     return os.path.join(BASE_DIR, "start.bat")
 
 
@@ -74,7 +78,7 @@ def is_autostart_enabled():
 
 def enable_autostart():
     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, AUTOSTART_KEY, 0, winreg.KEY_SET_VALUE) as k:
-        winreg.SetValueEx(k, AUTOSTART_NAME, 0, winreg.REG_SZ, _get_start_bat_path())
+        winreg.SetValueEx(k, AUTOSTART_NAME, 0, winreg.REG_SZ, _get_autostart_path())
 
 
 def disable_autostart():
