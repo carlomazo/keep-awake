@@ -550,24 +550,24 @@ def _open_settings_inner(icon):
         start_paused_var.set(False)
 
     ttk.Button(tab_system, text=T("Reset to defaults"), command=_reset_defaults).grid(
-        row=13, column=0, sticky="w", padx=10, pady=(0, 6))
+        row=14, column=0, sticky="w", padx=10, pady=(0, 6))
 
     ttk.Separator(tab_system, orient="horizontal").grid(
-        row=14, column=0, columnspan=2, sticky="ew", padx=10, pady=(4, 6))
+        row=15, column=0, columnspan=2, sticky="ew", padx=10, pady=(4, 6))
 
     # Global hotkey
     ttk.Label(tab_system, text=T("Global hotkey (toggle)")).grid(
-        row=15, column=0, sticky="w", padx=10, pady=(4, 2))
+        row=16, column=0, sticky="w", padx=10, pady=(4, 2))
 
     _pending_hotkey = [state.hotkey_mods, state.hotkey_vk]
 
     hotkey_var = tk.StringVar(value=_format_hotkey(state.hotkey_mods, state.hotkey_vk))
     hotkey_btn = ttk.Button(tab_system, textvariable=hotkey_var, width=20)
-    hotkey_btn.grid(row=16, column=0, sticky="w", padx=24, pady=(0, 4))
+    hotkey_btn.grid(row=17, column=0, sticky="w", padx=24, pady=(0, 4))
 
     hotkey_hint = tk.StringVar(value=T("Click then press a key combo"))
     ttk.Label(tab_system, textvariable=hotkey_hint, foreground="#888888").grid(
-        row=17, column=0, sticky="w", padx=24, pady=(0, 8))
+        row=18, column=0, sticky="w", padx=24, pady=(0, 8))
 
     _capturing = [False]
 
@@ -610,7 +610,7 @@ def _open_settings_inner(icon):
     hotkey_btn.bind("<Button-1>", _start_capture)
 
     ttk.Separator(tab_system, orient="horizontal").grid(
-        row=18, column=0, columnspan=2, sticky="ew", padx=10, pady=(4, 6))
+        row=19, column=0, columnspan=2, sticky="ew", padx=10, pady=(4, 6))
 
     def _export_settings():
         from tkinter import filedialog
@@ -677,7 +677,7 @@ def _open_settings_inner(icon):
             messagebox.showerror(T("Import failed"), str(e), parent=root)
 
     exp_frame = ttk.Frame(tab_system)
-    exp_frame.grid(row=19, column=0, sticky="w", padx=10, pady=(0, 14))
+    exp_frame.grid(row=20, column=0, sticky="w", padx=10, pady=(0, 14))
     ttk.Button(exp_frame, text=T("Export settings"), command=_export_settings).pack(side="left", padx=(0, 6))
     ttk.Button(exp_frame, text=T("Import settings"), command=_import_settings).pack(side="left")
 
