@@ -14,7 +14,7 @@ The installer will:
 - Optionally add a desktop shortcut
 - Optionally set the app to start with Windows
 
-> **Note:** Windows SmartScreen may show a warning on first run (unknown publisher). Click "More info" → "Run anyway".
+> **Note:** Windows SmartScreen may show a warning on first run. The installer is signed as **Keep Awake — carlomazo** (self-signed certificate). Click "More info" → "Run anyway" to proceed.
 
 ---
 
