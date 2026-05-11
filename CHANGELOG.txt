@@ -1,0 +1,148 @@
+Keep Awake — Changelog
+======================
+
+v2.4.0 (2026-05-10)
+--------------------
+- New: "Start paused" option in Settings > System — app opens without activating keep-awake
+- New: "Pause when screen is locked" in Settings > System — resumes only if app was active before locking
+- New: active profile name shown in tray Profiles submenu (e.g. "Profiles (Work)")
+- Settings reorganized: Keep-awake methods moved from System tab into General tab
+  (General = Interval + Auto-stop + Keep methods; System = autostart, detection, theme, hotkey)
+
+v2.3.0 (2026-05-10)
+--------------------
+- New: configurable keep-awake methods in Settings > General
+  - System API: SetThreadExecutionState (prevent sleep / screen off) — on by default
+  - Mouse nudge: move cursor exactly 1px and back, returns to original position — on by default
+  - Key press: simulate a configurable key press — off by default
+    - Key is user-selectable (click button, press any key); default is Scroll Lock
+    - Any combination can be active; at least one must remain enabled
+
+v2.2.0 (2026-05-10)
+--------------------
+- Added language support: English and Português (Brasil) available in Settings > System
+- Language applies immediately on Save — Settings window reopens already translated
+- All UI translated: tray menu, tooltips, notifications, Settings window, dialogs, and error messages
+- Fixed: Settings window failing to open due to _load_rows() scope error in Log tab
+
+v2.1.0 (2026-05-10)
+--------------------
+- Smart pause: mouse nudge is skipped while the user is actively typing/moving the mouse;
+  idle threshold is configurable (default 30s) in Settings > System
+- Battery guard: app pauses automatically when battery drops below a configurable threshold
+  (default 20%); resumes when charger is plugged in — toggle in Settings > System
+- Log: added Week view — sessions grouped by ISO week with total, days active, and avg/day
+- Log: added Month view — sessions grouped by month with total, days active, and avg/day
+- Log: Chart/Week/Month buttons toggle back to List when clicked again
+
+v2.0.0 (2026-05-10)
+--------------------
+- Fixed: schedule no longer auto-starts the app when opened outside a scheduled window
+- Fixed: removed Shift key simulation — prevented interference with typing during keep-awake
+- Fixed: "Clear log" now requires confirmation to prevent accidental data loss
+- Fixed: schedule thread now stops within 10s of disabling (was up to 60s)
+- Fixed: hotkey capture now rejects key combos without a modifier (Ctrl/Shift/Alt required)
+- Fixed: "Reset to defaults" in System tab no longer crashes (referenced removed fields)
+- Fixed: Save/Apply no longer errors when schedule is disabled and time blocks are empty
+- Fixed: schedule_enabled no longer reset to false on quit (was not persisting across restarts)
+- Fixed: Start/Stop in tray no longer greyed out when schedule is enabled
+- Fixed: tooltip "schedule enabled" hint now updates immediately on Save/Apply
+- Fixed: tooltip loop now runs continuously (not only while active) — hint visible when paused
+- Tray menu: added Profiles submenu — activate profiles without opening Settings
+- Log: session durations now display as Xh Xm or Xs instead of raw decimal minutes
+
+v1.9.0 (2026-05-10)
+--------------------
+- Schedule: up to 3 time blocks per day (e.g. 08:00–12:00 and 13:00–18:00)
+- Schedule: old single start/end format auto-migrated to blocks on first load
+- Schedule: removed from tray quick menu — managed exclusively via Settings > Schedule tab
+- Tooltip: shows "schedule enabled" hint when hovering tray icon (only when schedule is active)
+- Log: added Chart button — horizontal ASCII bar chart for the last 14 days
+- Log: added Export HTML button — generates standalone report with chart + session table
+- System: added "Pause during Teams/Zoom meetings" toggle
+- Meeting detection: app pauses automatically when ms-teams or zoom is running;
+  resumes when meeting ends — only if app was active before the meeting started
+- Tray tooltip shows "paused (in meeting)" during detected meetings
+
+v1.8.0 (2026-05-10)
+--------------------
+- Schedule: replaced "weekdays only" with per-day checkboxes (Mon–Sun)
+- Schedule: shared Start/End time applies to all selected days
+- Schedule: tray menu label now shows active days (e.g. MoTuWeThFr 08:00–18:00)
+- Profiles: schedule_days saved and restored per profile
+
+v1.7.0 (2026-05-10)
+--------------------
+- Fixed: Settings window failing to open due to usage_log.csv missing header row
+- Fixed: hotkey listener thread crashing on launch (removed GetConsoleWindow call)
+- Settings window is now resizable and expands content dynamically
+- Log tab: text area grows with the window
+
+v1.6.0 (2026-05-10)
+--------------------
+- Settings: added configurable global hotkey in System tab
+- Click the hotkey button, press any Ctrl/Shift/Alt + letter combo to reassign
+- Hotkey persists in settings.json and re-registers on Apply/Save
+
+v1.5.0 (2026-05-10)
+--------------------
+- Settings: added "Reset to defaults" button in System tab (preserves Start with Windows and profiles)
+- Settings: theme now applies immediately when clicking Apply (no need to reopen)
+- Settings: removed "System" theme option — only Dark and Light available
+- Settings: double-click on profile in list activates it directly
+- Settings: added Edit (rename) and Update (overwrite configs) buttons in Profiles tab
+- Settings: profiles now display details panel (Interval, Auto-stop, Schedule) when selected
+- Settings: profiles now save and restore Schedule settings
+- Settings: added Apply button (saves without closing)
+- Settings: Interval field is now optional — blank uses the quick menu selection (default 60s)
+- Settings: Theme, Start with Windows moved from tray menu into Settings > System tab
+- Settings: added Log viewer tab — sessions grouped by date with totals
+- Settings: added Export and Import settings buttons in System tab
+- Settings: drag-to-reorder profiles in the list
+- Custom interval/auto-stop in tray menu are now clickable — open a mini input window
+- Auto-stop field accepts flexible duration format: 1h30m, 20m, 45s, 90 (seconds)
+
+v1.4.0 (2026-05-10)
+--------------------
+- Added persistent settings (settings.json) — all configs survive app restart
+- Added usage log (usage_log.csv) — records each session with date, start, end, duration
+- Added profiles — save/activate named configurations (interval + auto-stop + schedule)
+- Added global hotkey Ctrl+Shift+K to toggle keep-awake from anywhere
+- Added real-time tooltip — updates every 60s regardless of interval setting
+- Added dark/light theme support in Settings window (follows Windows theme)
+- Settings redesigned with tabbed layout: General, Schedule, Profiles, System
+- Tray menu: Profiles and Start with Windows removed (moved to Settings)
+
+v1.3.0 (2026-05-10)
+--------------------
+- Fixed: tray menu labels (Schedule, Interval, Auto-stop) now update dynamically after saving Settings
+- Added Custom item in Interval and Auto-stop submenus showing current value when non-standard
+- Settings: Auto-stop field accepts flexible duration (1h30m, 20m, 45s)
+
+v1.2.0 (2026-05-10)
+--------------------
+- Added Settings window (General, Schedule tabs) accessible from tray menu
+- Added configurable interval via menu (30s / 1min / 2min)
+- Added auto-stop timer (No limit / 1h / 2h / 4h) with countdown in tooltip
+- Added schedule (weekdays 08:00–18:00) — auto start/stop on workdays
+- Added Start with Windows toggle (registry autostart)
+- Added balloon tip notifications on activate/pause/settings changes
+- Start/Stop menu items disabled when not applicable
+- Tray menu: Start/Stop grayed out based on state
+
+v1.1.0 (2026-05-10)
+--------------------
+- Fixed: tray icon now starts green (active) instead of red on launch
+- Added double-click on tray icon to toggle start/stop
+- Added schedule feature (weekdays only)
+- Fixed: start.bat relaunches minimized to suppress cmd window flash
+- Removed blink animation (reverted per user preference)
+
+v1.0.0 (2026-05-10)
+--------------------
+- Initial release
+- System tray icon (green = active, red = paused)
+- Prevents Windows sleep/lock via SetThreadExecutionState + mouse nudge
+- Auto-starts active on launch
+- Menu: Start / Stop / Quit
+- Single instance protection via Windows named mutex

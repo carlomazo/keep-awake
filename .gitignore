@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# App runtime files
+settings.json
+settings_error.log
+startup.log
+usage_log.csv
+mutex.txt
+
+# Test images
+test_icon_*.png
+
+# Backup files
+*_backup.py
+
+# PowerShell scripts (internal tooling)
+*.ps1
+check_mutex.py
