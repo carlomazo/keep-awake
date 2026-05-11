@@ -19,7 +19,7 @@ import winreg
 import pystray
 from pystray import MenuItem as item
 
-from state import state, BASE_DIR, MUTEX_NAME, VERSION, save_settings, load_settings
+from state import state, BASE_DIR, MUTEX_NAME, VERSION, save_settings, load_settings, _migrate_schedule_blocks
 from core import (
     T,
     _build_tooltip,
@@ -211,8 +211,7 @@ def _prompt_custom_interval(icon):
     entry.focus()
     entry.bind("<Return>", apply)
     entry.bind("<Escape>", lambda e: root.destroy())
-    root.protocol("WM_DELETE_WINDOW",
-                  lambda: (set_interval(60, icon), root.destroy()) if not entry.get().strip() else root.destroy())
+    root.protocol("WM_DELETE_WINDOW", root.destroy)
     ttk.Button(root, text="OK", command=apply).pack(pady=(0, 12))
     root.mainloop()
 
@@ -271,8 +270,8 @@ def apply_profile(name, icon):
     state.auto_stop_after = p["auto_stop_after"]
     if "schedule_blocks" in p:
         state.schedule_blocks = p["schedule_blocks"]
-    elif "schedule_start" in p and "schedule_end" in p:
-        state.schedule_blocks = [{"start": p["schedule_start"], "end": p["schedule_end"]}]
+    else:
+        state.schedule_blocks = _migrate_schedule_blocks(p)
     state.schedule_days  = set(p.get("schedule_days", sorted(state.schedule_days)))
     state.active_profile = name
     if state.running:
@@ -373,8 +372,11 @@ def _register_hotkey(icon):
 
 
 def _unregister_hotkey():
-    ctypes.windll.user32.PostThreadMessageW(
-        _hotkey_thread.ident if _hotkey_thread else 0, 0x0012, 0, 0)  # WM_QUIT
+    global _hotkey_thread
+    if _hotkey_thread and _hotkey_thread.ident:
+        ctypes.windll.user32.PostThreadMessageW(
+            _hotkey_thread.ident, 0x0012, 0, 0)  # WM_QUIT
+    _hotkey_thread = None
 
 
 def _reregister_hotkey(icon):

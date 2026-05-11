@@ -258,7 +258,10 @@ def _parse_duration(val: str):
         s = int(pattern.group(3) or 0)
         return h * 3600 + m * 60 + s, None
     try:
-        return int(val), None
+        result = int(val)
+        if result < 0:
+            return None, "Use formats like: 1h30m, 20m, 45s, 90"
+        return result, None
     except ValueError:
         return None, "Use formats like: 1h30m, 20m, 45s, 90"
 
@@ -270,7 +273,7 @@ def _format_duration(seconds: int) -> str:
     if h: parts.append(f"{h}h")
     if m: parts.append(f"{m}m")
     if s: parts.append(f"{s}s")
-    return "".join(parts) or "0s"
+    return "".join(parts) if parts else "0s"
 
 
 # ---------------------------------------------------------------------------

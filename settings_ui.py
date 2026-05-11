@@ -9,7 +9,7 @@ import json
 import os
 import threading
 
-from state import state, BASE_DIR, SETTINGS_FILE, LOG_FILE, save_settings
+from state import state, BASE_DIR, SETTINGS_FILE, LOG_FILE, save_settings, _migrate_schedule_blocks
 from core import (
     T,
     _parse_duration,
@@ -311,10 +311,7 @@ def _open_settings_inner(icon):
         state.interval        = p["interval"]
         state.auto_stop_after = p["auto_stop_after"]
         # support old profiles with schedule_start/end
-        if "schedule_blocks" in p:
-            state.schedule_blocks = p["schedule_blocks"]
-        elif "schedule_start" in p and "schedule_end" in p:
-            state.schedule_blocks = [{"start": p["schedule_start"], "end": p["schedule_end"]}]
+        state.schedule_blocks = _migrate_schedule_blocks(p)
         state.schedule_days   = set(p.get("schedule_days", sorted(state.schedule_days)))
         state.active_profile  = raw
         entry_interval.delete(0, tk.END)
@@ -327,14 +324,13 @@ def _open_settings_inner(icon):
             b = _pad[bi]
             for e in (e_sh, e_sm, e_eh, e_em):
                 e.delete(0, tk.END)
-            if b.get("start"):
+            if "start" in b and b["start"]:
                 e_sh.insert(0, f"{b['start'][0]:02d}"); e_sm.insert(0, f"{b['start'][1]:02d}")
                 e_eh.insert(0, f"{b['end'][0]:02d}");   e_em.insert(0, f"{b['end'][1]:02d}")
         for i, v in enumerate(day_vars):
             v.set(i in state.schedule_days)
         _refresh_listbox()
         icon.update_menu()
-        _refresh_listbox()
         _show_details()
 
     def _show_details(event=None):
@@ -635,7 +631,6 @@ def _open_settings_inner(icon):
 
     def _import_settings():
         from tkinter import filedialog
-        from state import _settings_to_dict
         path = filedialog.askopenfilename(
             parent=root, filetypes=[("JSON files", "*.json")], title="Import settings")
         if not path:
@@ -645,10 +640,7 @@ def _open_settings_inner(icon):
                 d = json.load(f)
             state.interval        = d.get("interval", 60)
             state.auto_stop_after = d.get("auto_stop_after", None)
-            if "schedule_blocks" in d:
-                state.schedule_blocks = d["schedule_blocks"]
-            elif "schedule_start" in d and "schedule_end" in d:
-                state.schedule_blocks = [{"start": d["schedule_start"], "end": d["schedule_end"]}]
+            state.schedule_blocks   = _migrate_schedule_blocks(d)
             state.schedule_days   = set(d.get("schedule_days", [0, 1, 2, 3, 4]))
             state.profiles        = d.get("profiles", {})
             state.active_profile  = d.get("active_profile", None)
@@ -667,7 +659,7 @@ def _open_settings_inner(icon):
                 b = _pad_imp[bi]
                 for e in (e_sh, e_sm, e_eh, e_em):
                     e.delete(0, tk.END)
-                if b.get("start"):
+                if "start" in b and b["start"]:
                     e_sh.insert(0, f"{b['start'][0]:02d}"); e_sm.insert(0, f"{b['start'][1]:02d}")
                     e_eh.insert(0, f"{b['end'][0]:02d}");   e_em.insert(0, f"{b['end'][1]:02d}")
             for i, v in enumerate(day_vars):

@@ -143,7 +143,10 @@ def tooltip_loop(icon):
 
 def schedule_loop(icon):
     # Import here to avoid circular import at module level
-    import keep_awake as _ka
+    try:
+        import keep_awake as _ka
+    except Exception:
+        return
     while state.schedule_enabled and not _shutdown.is_set():
         should_run = _in_schedule_window()
         if should_run and not state.running:
@@ -187,7 +190,10 @@ _meeting_thread = None
 
 
 def _meeting_monitor_loop(icon):
-    import keep_awake as _ka
+    try:
+        import keep_awake as _ka
+    except Exception:
+        return
     while state.meeting_detection and not _shutdown.is_set():
         in_meeting = _is_in_meeting()
         if in_meeting and not state.meeting_active:
@@ -224,7 +230,10 @@ _battery_thread = None
 
 
 def _battery_monitor_loop(icon):
-    import keep_awake as _ka
+    try:
+        import keep_awake as _ka
+    except Exception:
+        return
     while state.battery_guard and not _shutdown.is_set():
         pct = _get_battery_percent()
         if pct is not None and pct <= state.battery_threshold and not state.battery_paused:
@@ -270,7 +279,10 @@ def _is_screen_locked():
 
 
 def _lock_monitor_loop(icon):
-    import keep_awake as _ka
+    try:
+        import keep_awake as _ka
+    except Exception:
+        return
     while state.lock_guard and not _shutdown.is_set():
         locked = _is_screen_locked()
         if locked and not state.lock_paused:

@@ -7,13 +7,14 @@ No imports from other keep-awake modules (avoids circular imports).
 
 import os
 import json
+import datetime
 import threading
 from dataclasses import dataclass, field
 from typing import Optional
 
 # --- Paths ---
 
-VERSION       = "2.5.0"
+VERSION       = "2.5.1"
 
 BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_FILE = os.path.join(BASE_DIR, "settings.json")
@@ -29,7 +30,7 @@ class AppState:
     running: bool = False
     interval: int = 60
     active_since: Optional[float] = None
-    active_since_dt: Optional[object] = None
+    active_since_dt: Optional[datetime.datetime] = None
     auto_stop_after: Optional[int] = None
     auto_stop_timer: Optional[threading.Timer] = None
 
@@ -86,6 +87,17 @@ class AppState:
 state = AppState()
 
 
+# --- Helpers ---
+
+def _migrate_schedule_blocks(d: dict) -> list:
+    """Return schedule_blocks from a settings dict, migrating old start/end format."""
+    if "schedule_blocks" in d:
+        return d["schedule_blocks"]
+    if "schedule_start" in d and "schedule_end" in d:
+        return [{"start": d["schedule_start"], "end": d["schedule_end"]}]
+    return state.schedule_blocks
+
+
 # --- Settings persistence ---
 
 def _settings_to_dict():
@@ -132,10 +144,7 @@ def load_settings():
         state.interval          = d.get("interval", 60)
         state.auto_stop_after   = d.get("auto_stop_after", None)
         state.schedule_enabled  = d.get("schedule_enabled", False)
-        if "schedule_blocks" in d:
-            state.schedule_blocks = d["schedule_blocks"]
-        elif "schedule_start" in d and "schedule_end" in d:
-            state.schedule_blocks = [{"start": d["schedule_start"], "end": d["schedule_end"]}]
+        state.schedule_blocks   = _migrate_schedule_blocks(d)
         state.schedule_days     = set(d.get("schedule_days") or [0, 1, 2, 3, 4])
         state.profiles          = d.get("profiles", {})
         state.active_profile    = d.get("active_profile", None)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-tests/test_core.py — Unit tests for pure functions in core.py.
+tests/test_core.py — Unit tests for pure functions in core.py and updater.py.
 
 No external dependencies; uses only unittest from the standard library.
 Run with:  python -m unittest discover tests
@@ -17,7 +17,7 @@ import unittest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import the functions under test.
-from core import _parse_duration, _format_duration, _in_schedule_window, _build_tooltip
+from core import _parse_duration, _format_duration, _in_schedule_window, _build_tooltip, _format_hotkey, MOD_CONTROL, MOD_SHIFT, MOD_ALT
 
 # AppState is needed to build isolated state objects for the schedule/tooltip tests.
 from state import AppState
@@ -80,6 +80,21 @@ class TestParseDuration(unittest.TestCase):
         # The pattern groups exist (all "0"), so result is 0 seconds.
         self.assertEqual(secs, 0)
         self.assertIsNone(err)
+
+    def test_minutes_and_seconds(self):
+        secs, err = _parse_duration("1m30s")
+        self.assertEqual(secs, 90)
+        self.assertIsNone(err)
+
+    def test_plain_float_string_is_invalid(self):
+        secs, err = _parse_duration("1.5")
+        self.assertIsNone(secs)
+        self.assertIsNotNone(err)
+
+    def test_negative_string_is_invalid(self):
+        secs, err = _parse_duration("-10")
+        self.assertIsNone(secs)
+        self.assertIsNotNone(err)
 
 
 # ---------------------------------------------------------------------------
@@ -223,6 +238,22 @@ class TestInScheduleWindow(unittest.TestCase):
         # 12:00 — between blocks
         self.assertFalse(self._call_with_time(st, 0, 12, 0))
 
+    def test_weekend_excluded_by_default(self):
+        st = self._make_state((8, 0), (18, 0), days={0, 1, 2, 3, 4})
+        # Sunday (weekday 6) — excluded
+        self.assertFalse(self._call_with_time(st, 6, 12, 0))
+
+    def test_weekend_included_when_configured(self):
+        st = self._make_state((10, 0), (14, 0), days={5, 6})
+        # Saturday (weekday 5), 11:00 — inside block
+        self.assertTrue(self._call_with_time(st, 5, 11, 0))
+
+    def test_empty_blocks_returns_false(self):
+        st = AppState()
+        st.schedule_blocks = []
+        st.schedule_days = {0, 1, 2, 3, 4}
+        self.assertFalse(self._call_with_time(st, 0, 12, 0))
+
 
 # ---------------------------------------------------------------------------
 # _build_tooltip
@@ -285,6 +316,68 @@ class TestBuildTooltip(unittest.TestCase):
         st.schedule_enabled = True
         tip = _build_tooltip(st)
         self.assertIn("schedule enabled", tip)
+
+
+# ---------------------------------------------------------------------------
+# _format_hotkey
+# ---------------------------------------------------------------------------
+
+class TestFormatHotkey(unittest.TestCase):
+
+    def test_ctrl_shift_k(self):
+        result = _format_hotkey(MOD_CONTROL | MOD_SHIFT, ord("K"))
+        self.assertEqual(result, "Ctrl+Shift+K")
+
+    def test_alt_only(self):
+        result = _format_hotkey(MOD_ALT, ord("A"))
+        self.assertEqual(result, "Alt+A")
+
+    def test_ctrl_only(self):
+        result = _format_hotkey(MOD_CONTROL, ord("Z"))
+        self.assertEqual(result, "Ctrl+Z")
+
+    def test_all_modifiers(self):
+        result = _format_hotkey(MOD_CONTROL | MOD_SHIFT | MOD_ALT, ord("X"))
+        self.assertIn("Ctrl", result)
+        self.assertIn("Shift", result)
+        self.assertIn("Alt", result)
+        self.assertIn("X", result)
+
+    def test_non_alpha_vk_uses_hex(self):
+        result = _format_hotkey(MOD_CONTROL, 0x70)  # F1 key
+        self.assertIn("0x70", result)
+
+
+# ---------------------------------------------------------------------------
+# updater._parse_version
+# ---------------------------------------------------------------------------
+
+class TestParseVersion(unittest.TestCase):
+
+    def setUp(self):
+        from updater import _parse_version
+        self._parse = _parse_version
+
+    def test_simple_semver(self):
+        self.assertEqual(self._parse("2.5.0"), (2, 5, 0))
+
+    def test_with_v_prefix(self):
+        self.assertEqual(self._parse("v2.5.0"), (2, 5, 0))
+
+    def test_pre_release_suffix_stripped(self):
+        self.assertEqual(self._parse("v2.5.0-beta"), (2, 5, 0))
+
+    def test_pre_release_rc_stripped(self):
+        self.assertEqual(self._parse("v3.0.0-rc1"), (3, 0, 0))
+
+    def test_invalid_returns_zero(self):
+        self.assertEqual(self._parse("not-a-version"), (0, 0, 0))
+
+    def test_version_comparison_newer(self):
+        self.assertGreater(self._parse("v2.6.0"), self._parse("v2.5.0"))
+
+    def test_version_comparison_same(self):
+        self.assertEqual(self._parse("v2.5.0"), self._parse("2.5.0"))
 
 
 if __name__ == "__main__":

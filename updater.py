@@ -25,7 +25,7 @@ TIMEOUT      = 10   # HTTP timeout
 
 
 def _parse_version(v: str):
-    v = v.lstrip("v")
+    v = v.lstrip("v").split("-")[0]  # strip pre-release suffix e.g. "2.5.0-beta"
     try:
         return tuple(int(x) for x in v.split("."))
     except ValueError:
@@ -104,8 +104,6 @@ def start_update_checker(notify_fn=None):
         if notify_fn:
             notify_fn(f"Keep Awake {tag} is available. Click to update.")
 
-        # Show prompt in main thread via after() is not available here,
-        # so we open a minimal Tk window from this thread (safe, no main loop running).
         _prompt_update(tag, url, notify_fn or (lambda m: None))
 
     threading.Thread(target=_check, daemon=True, name="update-checker").start()

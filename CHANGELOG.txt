@@ -1,6 +1,31 @@
 Keep Awake — Changelog
 ======================
 
+v2.5.1 (2026-05-11)
+--------------------
+- Fixed: crash on quit — hotkey thread null check was incorrectly placed; now safely
+  checks thread exists and has a valid ident before posting WM_QUIT
+- Fixed: _hotkey_thread was never reset to None after unregister, leaving a dead reference
+- Fixed: closing the custom interval dialog without input silently reset interval to 60s;
+  now closing without entering a value leaves the current interval unchanged
+- Fixed: import keep_awake inside monitor loops (schedule, meeting, battery, lock) was
+  unhandled — now wrapped in try/except so a startup failure doesn't silently kill monitors
+- Fixed: version parser in auto-updater failed on pre-release tags (e.g. v2.5.1-beta);
+  now strips suffix before comparing — pre-release releases no longer skipped
+- Fixed: _parse_duration accepted negative integers (e.g. "-10"); now returns error
+- Fixed: dead import of _settings_to_dict in _import_settings() removed
+- Fixed: duplicate _refresh_listbox() call in _activate_profile() removed
+- Fixed: b.get("start") check unsafe for empty list — replaced with "start" in b and b["start"]
+- Refactored: duplicated schedule migration logic (old schedule_start/end format) extracted
+  into _migrate_schedule_blocks() helper in state.py — used in all 3 call sites
+- Refactored: Optional[object] type hint for active_since_dt replaced with Optional[datetime.datetime]
+- Fixed: _format_duration returned unreachable "or '0s'" — replaced with explicit conditional
+- Tests: expanded from 33 to 51 tests
+  - Added TestFormatHotkey (5 tests: Ctrl+Shift+K, single modifier, all modifiers, non-alpha VK)
+  - Added TestParseVersion (7 tests: semver, v-prefix, pre-release stripping, comparison)
+  - Added TestParseDuration edge cases: 1m30s, float strings, negative strings
+  - Added TestInScheduleWindow: weekend excluded/included, empty blocks
+
 v2.5.0 (2026-05-11)
 --------------------
 - New: Windows installer (keep_awake_setup.exe) built with Inno Setup
